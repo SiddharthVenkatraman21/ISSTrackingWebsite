@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ISS Tracking on CesiumJS Globe</title>
@@ -22,13 +23,12 @@
 
     <script src="https://cesium.com/downloads/cesiumjs/releases/1.91/Build/Cesium/Cesium.js"></script>
     <script>
-        // Replace 'YOUR_CESIUM_ION_ACCESS_TOKEN' with your actual Cesium ion access token
         Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzYzNjOThlZi1hNDQ2LTQxYzktOGMxNS0wZjA0NWUxOWEyZjUiLCJpZCI6MTg4MjM4LCJpYXQiOjE3MDQ1ODEyMjl9.ek7OBolIDh1ziOVl9kotU9oOo1-Pv35AlK5YFiTmxqg';
 
         var viewer = new Cesium.Viewer('cesiumContainer', {
             baseLayerPicker: false,
             animation: false,
-            timeline: false ,
+            timeline: false,
             geocoder: false,
         });
 
@@ -39,23 +39,23 @@
                 width: 50,
                 height: 50
             },
-            // Add a transparent radius (in meters) around the ISS icon
             ellipse: {
-                semiMinorAxis: 800000,  // Adjust the radius as needed
+                semiMinorAxis: 800000,
                 semiMajorAxis: 800000,
-                material: Cesium.Color.fromCssColorString('rgba(50,50,50,0.7)')  // Adjust the alpha value (transparency) as needed
+                material: Cesium.Color.fromCssColorString('rgba(50,50,50,0.7)')
             }
         });
 
-        // Function to update ISS position
         function moveISS() {
-            fetch('https://localhost:3000/api/iss-position')
+            fetch('https://api.n2yo.com/rest/v1/satellite/positions/25544/41.702/-76.014/0/2/&apiKey=8CS3L3-ZH38FQ-HB7PCE-56PG')
                 .then(response => response.json())
                 .then(data => {
-                    var lat = parseFloat(data.iss_position.latitude);
-                    var lon = parseFloat(data.iss_position.longitude);
+                    // Use the first position in the array
 
-                    // Update the ISS position in Cesium
+                    console.log(data.positions[0])
+                    var lat = parseFloat(data.positions[0].satlatitude);
+                    var lon = parseFloat(data.positions[0].satlongitude);
+
                     issEntity.position.setValue(Cesium.Cartesian3.fromDegrees(lon, lat));
                 })
                 .catch(error => console.error('Error fetching ISS data:', error));
@@ -63,7 +63,6 @@
             setTimeout(moveISS, 5000);
         }
 
-        // Initial call to start ISS tracking
         moveISS();
     </script>
 </body>

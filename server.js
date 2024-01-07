@@ -1,21 +1,23 @@
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import httpServer from 'http-server';
 import express from 'express';
-import fetch from 'node-fetch';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5500;
 
-// Proxy endpoint
-app.get('/api/iss-position', async (req, res) => {
-    try {
-        const response = await fetch('http://api.open-notify.org/iss-now.json');
-        const data = await response.json();
-        res.json(data);
-    } catch (error) {
-        console.error('Error fetching ISS data:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+app.use('/', express.static(__dirname));
+app.use('/api', createProxyMiddleware({ target: 'https://api.n2yo.com', changeOrigin: true }));
+
+const server = httpServer.createServer({
+    root: __dirname,
+    default: 'index.html',  // Specify the default document
 });
-
-app.listen(PORT, () => {
-    console.log(`Proxy server running on port ${PORT}`);
+server.listen(5500, () => {
+    console.log('Server is running on http://127.0.0.1:5500/');
 });
