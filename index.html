@@ -49,7 +49,7 @@
 
         // Function to update ISS position
         function moveISS() {
-            fetch('http://localhost:3000/api/iss-position')
+            fetch('https://localhost:3000/api/iss-position')
                 .then(response => response.json())
                 .then(data => {
                     var lat = parseFloat(data.iss_position.latitude);
